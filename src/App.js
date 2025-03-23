@@ -1,4 +1,3 @@
-// import logo from "./logo.svg";
 import "./App.css";
 import React, { useState, useEffect, useRef } from "react";
 import nimbus_logo from "./images/Nimbus copy.png";
@@ -7,9 +6,6 @@ import side2 from "./images/Side2.png";
 import side3 from "./images/Side3.png";
 import side4 from "./images/Side4.png";
 import side5 from "./images/Side5.png";
-
-// Base phone number (first part)
-// const basePhoneNumber = "555";
 
 // Define the patterns and their corresponding riddles and answers
 const patterns = {
@@ -58,8 +54,8 @@ const patterns = {
 // Main App Component
 const App = () => {
   return (
-    <div className="bg-gray-100 min-h-screen p-5 flex flex-col items-center">
-      <div className="bg-white p-5 rounded-lg shadow-md w-full max-w-xl">
+    <div className="bg-gray-100 min-h-screen p-2 sm:p-5 flex flex-col items-center">
+      <div className="bg-white p-3 sm:p-5 rounded-lg shadow-md w-full max-w-xl">
         <ConnectTheDots />
       </div>
     </div>
@@ -68,24 +64,24 @@ const App = () => {
 
 // Instructions Component
 const Instructions = () => (
-  <div className="bg-gray-50 p-3 rounded-md mb-4 text-center">
-    <div className="flex flex-col gap-4">
+  <div className="bg-gray-50 p-2 sm:p-3 rounded-md mb-4 text-center">
+    <div className="flex flex-col gap-2 sm:gap-4">
       <div className="w-full flex items-center justify-between">
         <div>
-          <img src={nimbus_logo} alt="nimnus logo" className="w-14" />
+          <img src={nimbus_logo} alt="nimnus logo" className="w-10 sm:w-14" />
         </div>
-        <div className="text-2xl font-bold">
+        <div className="text-xl sm:text-2xl font-bold">
           <h1> TEAM OJAS</h1>
         </div>
         <div>
-          <img src={ojas_logo} alt="ojas logo" className="w-14" />
+          <img src={ojas_logo} alt="ojas logo" className="w-10 sm:w-14" />
         </div>
       </div>
 
-      <h1 className="text-3xl text-slate-900">Connect the Dots Challenge</h1>
+      <h1 className="text-2xl sm:text-3xl text-slate-900">Connect the Dots Challenge</h1>
       <div className="instructions">
-        <p className="text-left">
-          <strong className="text-lg">Instructions:</strong>
+        <p className="text-left text-sm sm:text-base">
+          <strong className="text-base sm:text-lg">Instructions:</strong>
           <ul>
             <li>1. Create your own pattern by connecting 6 dots.</li>
             <li>
@@ -114,7 +110,7 @@ const ChallengeSelector = ({ onSelectChallenge, currentChallenge }) => {
             currentChallenge === key
               ? "bg-blue-700 ring-2 ring-blue-300"
               : "bg-blue-500 hover:bg-blue-600"
-          } text-white px-3 py-2 rounded text-sm`}
+          } text-white px-2 py-1 sm:px-3 sm:py-2 rounded text-xs sm:text-sm`}
         >
           {pattern.displayName}
         </button>
@@ -127,17 +123,41 @@ const ChallengeSelector = ({ onSelectChallenge, currentChallenge }) => {
 const ConnectTheDots = () => {
   // Game state
   const [selectedDots, setSelectedDots] = useState([]);
-  const [currentChallenge, setCurrentChallenge] = useState("S");
+  const [currentChallenge, setCurrentChallenge] = useState("INFINITY");
   const [gameStatus, setGameStatus] = useState("drawing"); // drawing, riddle, success
-  // const [riddleAnswer, setRiddleAnswer] = useState("");
   const [feedback, setFeedback] = useState({ text: "", isError: false });
-  // const [phoneNumber, setPhoneNumber] = useState("");
-  // const [solvedPatterns, setSolvedPatterns] = useState({});
   const [attemptsCount, setAttemptsCount] = useState(0);
-  // const [gameover, setgameover] = useState(true);
+  const [gridSize, setGridSize] = useState({ width: 320, height: 320 });
+  const [dotSize, setDotSize] = useState(6);
+  const [cellSize, setcellSize] = useState(32);
 
   const canvasRef = useRef(null);
   const dotsRef = useRef({});
+  const gridContainerRef = useRef(null);
+
+  // Calculate responsive grid size
+  useEffect(() => {
+    const updateGridSize = () => {
+      if (gridContainerRef.current) {
+        const containerWidth = gridContainerRef.current.clientWidth;
+        // Keep grid square - same width and height
+        const size = Math.min(containerWidth, 400);
+        setGridSize({ width: size, height: size });
+        
+        // Adjust cell and dot size based on grid size
+        const newCellSize = Math.floor(size / 10);
+        setcellSize(newCellSize);
+        setDotSize(Math.max(6, Math.floor(newCellSize / 8)));
+      }
+    };
+
+    // Initial size calculation
+    updateGridSize();
+
+    // Update on window resize
+    window.addEventListener("resize", updateGridSize);
+    return () => window.removeEventListener("resize", updateGridSize);
+  }, []);
 
   // Initialize dots data
   useEffect(() => {
@@ -148,8 +168,8 @@ const ConnectTheDots = () => {
       for (let j = 0; j < 10; j++) {
         const coord = `${rows[i]}${j + 1}`;
         dots[coord] = {
-          x: j * 40 + 20,
-          y: i * 40 + 20,
+          x: j * cellSize + cellSize / 2,
+          y: i * cellSize + cellSize / 2,
           row: i,
           col: j,
         };
@@ -157,7 +177,7 @@ const ConnectTheDots = () => {
     }
 
     dotsRef.current = dots;
-  }, []);
+  }, [cellSize]);
 
   // Drawing functions
   const clearLines = () => {
@@ -185,7 +205,9 @@ const ConnectTheDots = () => {
         ctx.strokeStyle = "#ff5722"; // default orange
       }
 
-      ctx.lineWidth = 3;
+      // Scale line width based on grid size
+      const lineWidth = Math.max(2, Math.floor(gridSize.width / 150));
+      ctx.lineWidth = lineWidth;
       ctx.stroke();
     }
   };
@@ -198,20 +220,22 @@ const ConnectTheDots = () => {
       const dot1 = dotsRef.current[selectedDots[i]];
       const dot2 = dotsRef.current[selectedDots[i + 1]];
 
-      // Check if this segment is correct in the pattern
-      const isCorrectSegment =
-        i < correctCoords.length - 1 &&
-        selectedDots[i] === correctCoords[i] &&
-        selectedDots[i + 1] === correctCoords[i + 1];
+      if (dot1 && dot2) {
+        // Check if this segment is correct in the pattern
+        const isCorrectSegment =
+          i < correctCoords.length - 1 &&
+          selectedDots[i] === correctCoords[i] &&
+          selectedDots[i + 1] === correctCoords[i + 1];
 
-      drawLine(dot1.x, dot1.y, dot2.x, dot2.y, isCorrectSegment);
+        drawLine(dot1.x, dot1.y, dot2.x, dot2.y, isCorrectSegment);
+      }
     }
   };
 
-  // Redraw lines when selected dots change
+  // Redraw lines when selected dots change or when grid size changes
   useEffect(() => {
     redrawLines();
-  }, [selectedDots, currentChallenge]);
+  }, [selectedDots, currentChallenge, gridSize]);
 
   const handleDotClick = (coord) => {
     if (gameStatus !== "drawing") return;
@@ -240,7 +264,6 @@ const ConnectTheDots = () => {
     setGameStatus("drawing");
     setFeedback({ text: "", isError: false });
     clearLines();
-    // setAttemptsCount(0);
   };
 
   const handleSelectChallenge = (challengeKey) => {
@@ -277,57 +300,8 @@ const ConnectTheDots = () => {
         text: `Incorrect pattern. Try again! (Attempt ${attemptsCount + 1})`,
         isError: true,
       });
-
-      // Briefly flash the correct pattern if they've tried 3+ times
-      // if (attemptsCount >= 5) {
-      // Save current selection
-      // const userSelection = [...selectedDots];
-
-      // Show correct pattern for a moment
-      // setSelectedDots(correctCoords);
-
-      // Show hint text
-      // setgameover(false);
-      // setFeedback({
-      //   text: `Your Attempts are over, Better Luck Next Time🙂`,
-      //   isError: true,
-      // });
-
-      // After 2 seconds, restore user selection
-      // setTimeout(() => {
-      //   setSelectedDots(userSelection);
-      //   setFeedback({ text: "Try to recreate that pattern", isError: true });
-      // }, 2000);
-      // }
     }
   };
-
-  // const checkRiddle = () => {
-  //   const pattern = patterns[currentChallenge];
-
-  //   if (riddleAnswer === pattern.answer) {
-  //     // Generate phone number using the pattern's specific number
-  //     const newPhoneNumber = `${basePhoneNumber}-${pattern.patternNumber}-${riddleAnswer}`;
-  //     setPhoneNumber(newPhoneNumber);
-  //     setGameStatus("success");
-  //     setFeedback({ text: "Correct!", isError: false });
-
-  //     // Preload image for smoother display
-
-  //     // Add to solved patterns
-  //     setSolvedPatterns((prev) => ({
-  //       ...prev,
-  //       [currentChallenge]: {
-  //         patternName: pattern.displayName,
-  //         answer: pattern.answer,
-  //         phoneNumber: newPhoneNumber,
-  //         image: pattern.successImage,
-  //       },
-  //     }));
-  //   } else {
-  //     setFeedback({ text: "Incorrect answer. Try again.", isError: true });
-  //   }
-  // };
 
   return (
     <div className="flex flex-col items-center">
@@ -339,68 +313,43 @@ const ConnectTheDots = () => {
         currentChallenge={currentChallenge}
       />
 
-      {/* Current Challenge Info */}
-      {/* <div className="bg-blue-50 p-3 rounded-md mb-4 w-full text-center">
-        <h2 className="font-bold">
-          Current Challenge: {patterns[currentChallenge].displayName}
-        </h2>
-      </div> */}
+      {/* Grid Container with Relative Positioning */}
+      <div 
+        ref={gridContainerRef} 
+        className="w-full mt-4 mb-4 px-1 sm:px-6 md:px-10"
+      >
+        <div 
+          className="relative mx-auto"
+          style={{ width: `${gridSize.width}px`, height: `${gridSize.height + 25}px` }}
+        >
+          {/* Row and Column Labels */}
+          <RowLabels gridSize={gridSize} cellSize={cellSize} />
+          <ColumnLabels gridSize={gridSize} cellSize={cellSize} />
 
-      {/* Solved Patterns Summary */}
-      {/* {Object.keys(solvedPatterns).length > 0 && (
-        <div className="w-full mb-4 p-3 bg-green-50 rounded-md">
-          <h3 className="font-bold text-center mb-2">Solved Patterns</h3>
-          <div className="grid grid-cols-1 gap-3">
-            {Object.entries(solvedPatterns).map(([key, data]) => (
-              <div
-                key={key}
-                className="flex items-center text-sm p-2 bg-white rounded-md shadow-sm"
-              >
-                <img
-                  src={data.image}
-                  alt={data.patternName}
-                  className="w-12 h-12 object-cover rounded mr-3"
-                />
-                <div className="flex-1">
-                  <span className="font-medium block">{data.patternName}</span>
-                  <div className="flex items-center">
-                    <span className="mr-2">Answer: {data.answer}</span>
-                    <span className="text-blue-500 font-mono">
-                      {data.phoneNumber}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          {/* Canvas for drawing lines */}
+          <canvas
+            ref={canvasRef}
+            width={gridSize.width}
+            height={gridSize.height}
+            className="absolute top-5 left-0 pointer-events-none z-10"
+          />
+
+          {/* Grid with dots */}
+          <Grid
+            selectedDots={selectedDots}
+            onDotClick={handleDotClick}
+            currentChallenge={currentChallenge}
+            gridSize={gridSize}
+            cellSize={cellSize}
+            dotSize={dotSize}
+          />
         </div>
-      )} */}
-
-      <div className="relative mt-8 mb-5">
-        {/* Row and Column Labels */}
-        <RowLabels />
-        <ColumnLabels />
-
-        {/* Canvas for drawing lines */}
-        <canvas
-          ref={canvasRef}
-          width="400"
-          height="400"
-          className="absolute top-0 left-0 pointer-events-none z-10"
-        />
-
-        {/* Grid with dots */}
-        <Grid
-          selectedDots={selectedDots}
-          onDotClick={handleDotClick}
-          currentChallenge={currentChallenge}
-        />
       </div>
 
       {/* Game Controls */}
-      <div className="flex flex-col items-center w-full mt-4">
-        <div className="font-mono text-sm mb-2">
-          Selected: {selectedDots.join(" → ")}
+      <div className="flex flex-col items-center w-full mt-2">
+        <div className="font-mono text-xs sm:text-sm mb-2 overflow-auto max-w-full px-2">
+          <span className="whitespace-nowrap">Selected: {selectedDots.join(" → ")}</span>
         </div>
 
         {/* Different controls based on game status */}
@@ -408,7 +357,7 @@ const ConnectTheDots = () => {
           <div className="flex space-x-3">
             <button
               onClick={resetGame}
-              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+              className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 sm:px-4 sm:py-2 rounded text-sm"
             >
               Reset
             </button>
@@ -419,7 +368,7 @@ const ConnectTheDots = () => {
                 selectedDots.length !== 6
                   ? "bg-gray-400 cursor-not-allowed"
                   : "bg-green-500 hover:bg-green-600"
-              } text-white px-4 py-2 rounded`}
+              } text-white px-3 py-1 sm:px-4 sm:py-2 rounded text-sm`}
             >
               Check Pattern
             </button>
@@ -430,7 +379,7 @@ const ConnectTheDots = () => {
       {/* Feedback Message */}
       {feedback.text && (
         <div
-          className={`mt-4 p-3 rounded-md text-center ${
+          className={`mt-3 p-2 sm:p-3 rounded-md text-center text-sm sm:text-base ${
             feedback.isError
               ? "bg-red-100 text-red-700"
               : "bg-green-100 text-green-700"
@@ -442,21 +391,21 @@ const ConnectTheDots = () => {
 
       {/* Riddle Challenge */}
       {gameStatus === "riddle" && (
-        <div className="mt-6 text-center w-full bg-purple-50 p-4 rounded-md">
-          <h2 className="text-xl font-bold mb-2">Well Done!!</h2>
-          <p className="italic mb-4">
+        <div className="mt-4 text-center w-full bg-purple-50 p-3 sm:p-4 rounded-md">
+          <h2 className="text-lg sm:text-xl font-bold mb-2">Well Done!!</h2>
+          <p className="italic mb-3 text-sm sm:text-base">
             {patterns[currentChallenge].patternName}
           </p>
-          <p>
+          <p className="text-sm sm:text-base">
             Congratulations! You've solved the{" "}
             {patterns[currentChallenge].displayName} challenge.
           </p>
 
-          <div className="flex w-100 items-center justify-center">
+          <div className="flex w-full items-center justify-center">
             <img
               src={patterns[currentChallenge].successImage}
               alt={patterns[currentChallenge].patternName}
-              className="w-40 m-8"
+              className="w-32 sm:w-40 m-4 sm:m-8"
             />
           </div>
         </div>
@@ -466,15 +415,24 @@ const ConnectTheDots = () => {
 };
 
 // Row Labels Component
-const RowLabels = () => {
+const RowLabels = ({ gridSize, cellSize }) => {
   const rows = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
+  const labelSize = Math.max(Math.floor(cellSize / 2), 20);
 
   return (
-    <div className="absolute left-0 top-0 h-full flex flex-col justify-between -ml-6">
-      {rows.map((row) => (
+    <div 
+      className="absolute left-0 top-5 h-full flex flex-col "
+      style={{ marginLeft: `-${labelSize}px` }}
+    >
+      {rows.map((row, index) => (
         <div
           key={row}
-          className="flex items-center justify-center w-5 h-5 font-bold"
+          className="flex items-center justify-center font-bold text-xs"
+          style={{ 
+            width: `${labelSize}px`, 
+            height: `${cellSize}px`,
+            
+          }}
         >
           {row}
         </div>
@@ -484,15 +442,16 @@ const RowLabels = () => {
 };
 
 // Column Labels Component
-const ColumnLabels = () => {
+const ColumnLabels = ({ gridSize, cellSize }) => {
   const columns = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
   return (
-    <div className="absolute top-0 left-0 w-full flex justify-between -mt-6">
+    <div className="absolute top-0 left-0 w-full flex justify-between">
       {columns.map((col) => (
         <div
           key={col}
-          className="flex items-center justify-center w-5 h-5 font-bold"
+          className="flex items-center justify-center font-bold text-xs"
+          style={{ width: `${cellSize}px`, height: "20px" }}
         >
           {col}
         </div>
@@ -502,12 +461,20 @@ const ColumnLabels = () => {
 };
 
 // Grid Component
-const Grid = ({ selectedDots, onDotClick, currentChallenge }) => {
+const Grid = ({ selectedDots, onDotClick, currentChallenge, gridSize, cellSize, dotSize }) => {
   const rows = "ABCDEFGHIJ";
   const correctCoords = patterns[currentChallenge].coords;
 
   return (
-    <div className="grid grid-cols-10 grid-rows-10 gap-0">
+    <div
+      className="grid gap-0 absolute top-5 left-0"
+      style={{
+        gridTemplateColumns: `repeat(10, ${cellSize}px)`,
+        gridTemplateRows: `repeat(10, ${cellSize}px)`,
+        width: `${gridSize.width}px`,
+        height: `${gridSize.height}px`,
+      }}
+    >
       {Array.from({ length: 10 }, (_, i) =>
         Array.from({ length: 10 }, (_, j) => {
           const coord = `${rows[i]}${j + 1}`;
@@ -524,16 +491,20 @@ const Grid = ({ selectedDots, onDotClick, currentChallenge }) => {
             dotColorClass = isCorrectPosition ? "bg-green-500" : "bg-red-500";
           }
 
+          // Calculate dot size based on cell size
+          const actualDotSize = dotSize * 2;
+
           return (
             <div
               key={coord}
-              className="flex items-center justify-center relative"
-              style={{ width: "40px", height: "40px" }}
+              className="flex items-center justify-center"
+              style={{ width: `${cellSize}px`, height: `${cellSize}px` }}
             >
               <button
-                className={`w-5 h-5 rounded-full ${dotColorClass} transition-transform ${
+                className={`rounded-full ${dotColorClass} w-5 h-5 transition-transform ${
                   isSelected ? "transform scale-125" : ""
                 }`}
+                style={{ width: `${actualDotSize}px`, height: `${actualDotSize}px` }}
                 onClick={() => onDotClick(coord)}
               />
             </div>
