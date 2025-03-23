@@ -128,7 +128,7 @@ const ChallengeSelector = ({ onSelectChallenge, currentChallenge }) => {
 const ConnectTheDots = () => {
   // Game state
   const [selectedDots, setSelectedDots] = useState([]);
-  const [currentChallenge, setCurrentChallenge] = useState("S");
+  const [currentChallenge, setCurrentChallenge] = useState("INFINITY");
   const [gameStatus, setGameStatus] = useState("drawing"); // drawing, riddle, success
   // const [riddleAnswer, setRiddleAnswer] = useState("");
   const [feedback, setFeedback] = useState({ text: "", isError: false });
