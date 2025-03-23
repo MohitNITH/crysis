@@ -1,29 +1,48 @@
-import logo from "./logo.svg";
+// import logo from "./logo.svg";
 import "./App.css";
 import React, { useState, useEffect, useRef } from "react";
+import nimbus_logo from "./images/Nimbus copy.png";
+import ojas_logo from "./images/orangered copy.png";
+import side2 from "./images/Side2.png";
+import side3 from "./images/Side3.png";
+import side4 from "./images/Side4.png";
+import side5 from "./images/Side5.png";
 
 // Base phone number (first part)
-const basePhoneNumber = "555";
+// const basePhoneNumber = "555";
 
 // Define the patterns and their corresponding riddles and answers
 const patterns = {
-  S: {
+  
+    INFINITY: {
+      coords: ["J10", "B10", "E5", "I1", "B1", "J9"],
+      riddleText:
+        "I am the product of the smallest two prime numbers that add up to 10, multiplied by the number of sides in a heptagon. What two-digit number am I?",
+      answer: "63",
+      patternNumber: "444",
+      displayName: "Side 1",
+      hint: "Form a shape like ∞",
+      successImage: side5, // Placeholder for Infinity pattern image
+    },
+    LIGHTNING_BOLT: {
+      coords: ["A6", "E1", "F5", "J3", "E9", "D6"],
+      riddleText:
+        "I am the product of the first four Fibonacci numbers, divided by the sum of all single-digit prime numbers. What two-digit number am I?",
+      answer: "42",
+      patternNumber: "222",
+      displayName: "Side 2",
+      hint: "Form a zigzag pattern",
+      successImage: side2, // Placeholder for Lightning Bolt pattern image
+    },
+    S: {
     coords: ["A7", "B2", "D3", "F8", "H9", "J1"],
     riddleText:
       "I am the sum of all faces on a die, reduced to a single digit, then multiplied by a perfect square that is half of the smallest two-digit perfect square. What two-digit number am I?",
     answer: "36",
     patternNumber: "111",
-    displayName: "S Pattern",
+    displayName: "Side 3",
     hint: "Form an S shape",
-  },
-  LIGHTNING_BOLT: {
-    coords: ["A6", "E1", "F5", "J3", "E9", "D6"],
-    riddleText:
-      "I am the product of the first four Fibonacci numbers, divided by the sum of all single-digit prime numbers. What two-digit number am I?",
-    answer: "42",
-    patternNumber: "222",
-    displayName: "Lightning Bolt",
-    hint: "Form a zigzag pattern",
+    successImage: side3, // Placeholder for S pattern image
   },
   M: {
     coords: ["J2", "B2", "E5", "B8", "J8", "J3"],
@@ -31,17 +50,9 @@ const patterns = {
       "I am the number of degrees in a regular hexagon, minus the atomic number of carbon. What two-digit number am I?",
     answer: "54",
     patternNumber: "333",
-    displayName: "M Pattern",
+    displayName: "Side 4",
     hint: "Form an M shape",
-  },
-  INFINITY: {
-    coords: ["J10", "B10", "E5", "I1", "B1", "J9"],
-    riddleText:
-      "I am the product of the smallest two prime numbers that add up to 10, multiplied by the number of sides in a heptagon. What two-digit number am I?",
-    answer: "63",
-    patternNumber: "444",
-    displayName: "Infinity Pattern",
-    hint: "Form a shape like ∞",
+    successImage: side4, // Placeholder for M pattern image
   },
 };
 
@@ -50,9 +61,6 @@ const App = () => {
   return (
     <div className="bg-gray-100 min-h-screen p-5 flex flex-col items-center">
       <div className="bg-white p-5 rounded-lg shadow-md w-full max-w-xl">
-        <h1 className="text-2xl font-bold text-center text-gray-800 mb-2">
-          Connect the Dots Challenge
-        </h1>
         <ConnectTheDots />
       </div>
     </div>
@@ -61,11 +69,37 @@ const App = () => {
 
 // Instructions Component
 const Instructions = () => (
-  <div className="bg-gray-50 p-3 rounded-md mb-4 text-center text-sm">
-    <p>
-      <strong>Instructions:</strong> Connect exactly 6 dots to form a pattern.
-      Click "Check Pattern" when done.
-    </p>
+  <div className="bg-gray-50 p-3 rounded-md mb-4 text-center">
+    <div className="flex flex-col gap-4">
+      <div className="w-full flex items-center justify-between">
+        <div>
+          <img src={nimbus_logo} alt="nimnus logo" className="w-14" />
+        </div>
+        <div className="text-2xl font-bold">
+          <h1> TEAM OJAS</h1>
+        </div>
+        <div>
+          <img src={ojas_logo} alt="ojas logo" className="w-14" />
+        </div>
+      </div>
+
+      <h1 className="text-3xl text-slate-900">Connect the Dots Challenge</h1>
+      <div className="instructions">
+        <p className="text-left">
+          <strong className="text-lg">Instructions:</strong>
+          <ul>
+            <li>1. Create your own pattern by connecting 6 dots.</li>
+            <li>
+              2. Once you've selected 6 dots, you can submit your pattern.
+            </li>
+            <li>
+              3. Coordinates for each pattern can be found on each side of the
+              piller in LH
+            </li>
+          </ul>
+        </p>
+      </div>
+    </div>
   </div>
 );
 
@@ -96,14 +130,16 @@ const ConnectTheDots = () => {
   const [selectedDots, setSelectedDots] = useState([]);
   const [currentChallenge, setCurrentChallenge] = useState("S");
   const [gameStatus, setGameStatus] = useState("drawing"); // drawing, riddle, success
-  const [riddleAnswer, setRiddleAnswer] = useState("");
+  // const [riddleAnswer, setRiddleAnswer] = useState("");
   const [feedback, setFeedback] = useState({ text: "", isError: false });
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [solvedPatterns, setSolvedPatterns] = useState({});
+  // const [phoneNumber, setPhoneNumber] = useState("");
+  // const [solvedPatterns, setSolvedPatterns] = useState({});
   const [attemptsCount, setAttemptsCount] = useState(0);
+  // const [gameover, setgameover] = useState(true);
 
   const canvasRef = useRef(null);
   const dotsRef = useRef({});
+  
 
   // Initialize dots data
   useEffect(() => {
@@ -204,10 +240,9 @@ const ConnectTheDots = () => {
   const resetGame = () => {
     setSelectedDots([]);
     setGameStatus("drawing");
-    setRiddleAnswer("");
     setFeedback({ text: "", isError: false });
     clearLines();
-    setAttemptsCount(0);
+    // setAttemptsCount(0);
   };
 
   const handleSelectChallenge = (challengeKey) => {
@@ -235,7 +270,7 @@ const ConnectTheDots = () => {
     if (isCorrect) {
       setGameStatus("riddle");
       setFeedback({
-        text: "Pattern correct! Now solve the riddle.",
+        text: "Pattern correct! Here is one part of the QR Code",
         isError: false,
       });
     } else {
@@ -246,51 +281,55 @@ const ConnectTheDots = () => {
       });
 
       // Briefly flash the correct pattern if they've tried 3+ times
-      if (attemptsCount >= 2) {
+      // if (attemptsCount >= 5) {
         // Save current selection
-        const userSelection = [...selectedDots];
+        // const userSelection = [...selectedDots];
 
         // Show correct pattern for a moment
-        setSelectedDots(correctCoords);
+        // setSelectedDots(correctCoords);
 
         // Show hint text
-        setFeedback({
-          text: `Hint: ${patterns[currentChallenge].hint}`,
-          isError: true,
-        });
+        // setgameover(false);
+        // setFeedback({
+        //   text: `Your Attempts are over, Better Luck Next Time🙂`,
+        //   isError: true,
+        // });
 
         // After 2 seconds, restore user selection
-        setTimeout(() => {
-          setSelectedDots(userSelection);
-          setFeedback({ text: "Try to recreate that pattern", isError: true });
-        }, 2000);
-      }
+        // setTimeout(() => {
+        //   setSelectedDots(userSelection);
+        //   setFeedback({ text: "Try to recreate that pattern", isError: true });
+        // }, 2000);
+      // }
     }
   };
 
-  const checkRiddle = () => {
-    const pattern = patterns[currentChallenge];
+  // const checkRiddle = () => {
+  //   const pattern = patterns[currentChallenge];
 
-    if (riddleAnswer === pattern.answer) {
-      // Generate phone number using the pattern's specific number
-      const newPhoneNumber = `${basePhoneNumber}-${pattern.patternNumber}-${riddleAnswer}`;
-      setPhoneNumber(newPhoneNumber);
-      setGameStatus("success");
-      setFeedback({ text: "Correct!", isError: false });
+  //   if (riddleAnswer === pattern.answer) {
+  //     // Generate phone number using the pattern's specific number
+  //     const newPhoneNumber = `${basePhoneNumber}-${pattern.patternNumber}-${riddleAnswer}`;
+  //     setPhoneNumber(newPhoneNumber);
+  //     setGameStatus("success");
+  //     setFeedback({ text: "Correct!", isError: false });
 
-      // Add to solved patterns
-      setSolvedPatterns((prev) => ({
-        ...prev,
-        [currentChallenge]: {
-          patternName: pattern.displayName,
-          answer: pattern.answer,
-          phoneNumber: newPhoneNumber,
-        },
-      }));
-    } else {
-      setFeedback({ text: "Incorrect answer. Try again.", isError: true });
-    }
-  };
+  //     // Preload image for smoother display
+
+  //     // Add to solved patterns
+  //     setSolvedPatterns((prev) => ({
+  //       ...prev,
+  //       [currentChallenge]: {
+  //         patternName: pattern.displayName,
+  //         answer: pattern.answer,
+  //         phoneNumber: newPhoneNumber,
+  //         image: pattern.successImage,
+  //       },
+  //     }));
+  //   } else {
+  //     setFeedback({ text: "Incorrect answer. Try again.", isError: true });
+  //   }
+  // };
 
   return (
     <div className="flex flex-col items-center">
@@ -303,55 +342,64 @@ const ConnectTheDots = () => {
       />
 
       {/* Current Challenge Info */}
-      <div className="bg-blue-50 p-3 rounded-md mb-4 w-full text-center">
+      {/* <div className="bg-blue-50 p-3 rounded-md mb-4 w-full text-center">
         <h2 className="font-bold">
           Current Challenge: {patterns[currentChallenge].displayName}
         </h2>
-      </div>
+      </div> */}
 
       {/* Solved Patterns Summary */}
-      {Object.keys(solvedPatterns).length > 0 && (
+      {/* {Object.keys(solvedPatterns).length > 0 && (
         <div className="w-full mb-4 p-3 bg-green-50 rounded-md">
           <h3 className="font-bold text-center mb-2">Solved Patterns</h3>
-          <div className="grid grid-cols-1 gap-2">
+          <div className="grid grid-cols-1 gap-3">
             {Object.entries(solvedPatterns).map(([key, data]) => (
               <div
                 key={key}
-                className="flex justify-between items-center text-sm"
+                className="flex items-center text-sm p-2 bg-white rounded-md shadow-sm"
               >
-                <span className="font-medium">{data.patternName}:</span>
-                <div className="flex items-center">
-                  <span className="mr-2">Answer: {data.answer}</span>
-                  <span className="text-blue-500 font-mono">
-                    {data.phoneNumber}
-                  </span>
+                <img
+                  src={data.image}
+                  alt={data.patternName}
+                  className="w-12 h-12 object-cover rounded mr-3"
+                />
+                <div className="flex-1">
+                  <span className="font-medium block">{data.patternName}</span>
+                  <div className="flex items-center">
+                    <span className="mr-2">Answer: {data.answer}</span>
+                    <span className="text-blue-500 font-mono">
+                      {data.phoneNumber}
+                    </span>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         </div>
-      )}
+      )} */}
 
-      <div className="relative mt-2 mb-5">
-        {/* Row and Column Labels */}
-        <RowLabels />
-        <ColumnLabels />
+     
+        <div className="relative mt-8 mb-5">
+          {/* Row and Column Labels */}
+          <RowLabels />
+          <ColumnLabels />
 
-        {/* Canvas for drawing lines */}
-        <canvas
-          ref={canvasRef}
-          width="400"
-          height="400"
-          className="absolute top-0 left-0 pointer-events-none z-10"
-        />
+          {/* Canvas for drawing lines */}
+          <canvas
+            ref={canvasRef}
+            width="400"
+            height="400"
+            className="absolute top-0 left-0 pointer-events-none z-10"
+          />
 
-        {/* Grid with dots */}
-        <Grid
-          selectedDots={selectedDots}
-          onDotClick={handleDotClick}
-          currentChallenge={currentChallenge}
-        />
-      </div>
+          {/* Grid with dots */}
+          <Grid
+            selectedDots={selectedDots}
+            onDotClick={handleDotClick}
+            currentChallenge={currentChallenge}
+          />
+        </div>
+      
 
       {/* Game Controls */}
       <div className="flex flex-col items-center w-full mt-4">
@@ -360,7 +408,7 @@ const ConnectTheDots = () => {
         </div>
 
         {/* Different controls based on game status */}
-        {gameStatus === "drawing" && (
+        {gameStatus === "drawing"  && (
           <div className="flex space-x-3">
             <button
               onClick={resetGame}
@@ -399,46 +447,22 @@ const ConnectTheDots = () => {
       {/* Riddle Challenge */}
       {gameStatus === "riddle" && (
         <div className="mt-6 text-center w-full bg-purple-50 p-4 rounded-md">
-          <h2 className="text-xl font-bold mb-2">Riddle Challenge</h2>
-          <p className="italic mb-4">{patterns[currentChallenge].riddleText}</p>
-          <div className="flex items-center justify-center">
-            <input
-              type="number"
-              min="10"
-              max="99"
-              placeholder="??"
-              value={riddleAnswer}
-              onChange={(e) => setRiddleAnswer(e.target.value)}
-              className="w-16 p-2 text-center mr-2 border rounded"
-            />
-            <button
-              onClick={checkRiddle}
-              className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded"
-            >
-              Submit Answer
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Success Result */}
-      {gameStatus === "success" && (
-        <div className="mt-6 text-center animate-fade-in bg-green-50 p-4 rounded-md w-full">
-          <h2 className="text-xl font-bold mb-2">Challenge Complete!</h2>
+          <h2 className="text-xl font-bold mb-2">Well Done!!</h2>
+          <p className="italic mb-4">
+            {patterns[currentChallenge].patternName}
+          </p>
           <p>
             Congratulations! You've solved the{" "}
             {patterns[currentChallenge].displayName} challenge.
           </p>
-          <p>Here's your phone number:</p>
-          <div className="text-2xl font-bold tracking-wide text-blue-500 my-2">
-            {phoneNumber}
+
+          <div className="flex w-100 items-center justify-center">
+            <img
+              src={patterns[currentChallenge].successImage}
+              alt={patterns[currentChallenge].patternName}
+              className="w-40 m-8"
+            />
           </div>
-          <button
-            onClick={resetGame}
-            className="mt-4 bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded"
-          >
-            Try Again
-          </button>
         </div>
       )}
     </div>
