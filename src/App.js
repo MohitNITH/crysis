@@ -13,28 +13,27 @@ import side5 from "./images/Side5.png";
 
 // Define the patterns and their corresponding riddles and answers
 const patterns = {
-  
-    INFINITY: {
-      coords: ["J10", "B10", "E5", "I1", "B1", "J9"],
-      riddleText:
-        "I am the product of the smallest two prime numbers that add up to 10, multiplied by the number of sides in a heptagon. What two-digit number am I?",
-      answer: "63",
-      patternNumber: "444",
-      displayName: "Side 1",
-      hint: "Form a shape like ∞",
-      successImage: side5, // Placeholder for Infinity pattern image
-    },
-    LIGHTNING_BOLT: {
-      coords: ["A6", "E1", "F5", "J3", "E9", "D6"],
-      riddleText:
-        "I am the product of the first four Fibonacci numbers, divided by the sum of all single-digit prime numbers. What two-digit number am I?",
-      answer: "42",
-      patternNumber: "222",
-      displayName: "Side 2",
-      hint: "Form a zigzag pattern",
-      successImage: side2, // Placeholder for Lightning Bolt pattern image
-    },
-    S: {
+  INFINITY: {
+    coords: ["J10", "B10", "E5", "I1", "B1", "J9"],
+    riddleText:
+      "I am the product of the smallest two prime numbers that add up to 10, multiplied by the number of sides in a heptagon. What two-digit number am I?",
+    answer: "63",
+    patternNumber: "444",
+    displayName: "Side 1",
+    hint: "Form a shape like ∞",
+    successImage: side5, // Placeholder for Infinity pattern image
+  },
+  LIGHTNING_BOLT: {
+    coords: ["A6", "E1", "F5", "J3", "E9", "D6"],
+    riddleText:
+      "I am the product of the first four Fibonacci numbers, divided by the sum of all single-digit prime numbers. What two-digit number am I?",
+    answer: "42",
+    patternNumber: "222",
+    displayName: "Side 2",
+    hint: "Form a zigzag pattern",
+    successImage: side2, // Placeholder for Lightning Bolt pattern image
+  },
+  S: {
     coords: ["A7", "B2", "D3", "F8", "H9", "J1"],
     riddleText:
       "I am the sum of all faces on a die, reduced to a single digit, then multiplied by a perfect square that is half of the smallest two-digit perfect square. What two-digit number am I?",
@@ -139,7 +138,6 @@ const ConnectTheDots = () => {
 
   const canvasRef = useRef(null);
   const dotsRef = useRef({});
-  
 
   // Initialize dots data
   useEffect(() => {
@@ -282,24 +280,24 @@ const ConnectTheDots = () => {
 
       // Briefly flash the correct pattern if they've tried 3+ times
       // if (attemptsCount >= 5) {
-        // Save current selection
-        // const userSelection = [...selectedDots];
+      // Save current selection
+      // const userSelection = [...selectedDots];
 
-        // Show correct pattern for a moment
-        // setSelectedDots(correctCoords);
+      // Show correct pattern for a moment
+      // setSelectedDots(correctCoords);
 
-        // Show hint text
-        // setgameover(false);
-        // setFeedback({
-        //   text: `Your Attempts are over, Better Luck Next Time🙂`,
-        //   isError: true,
-        // });
+      // Show hint text
+      // setgameover(false);
+      // setFeedback({
+      //   text: `Your Attempts are over, Better Luck Next Time🙂`,
+      //   isError: true,
+      // });
 
-        // After 2 seconds, restore user selection
-        // setTimeout(() => {
-        //   setSelectedDots(userSelection);
-        //   setFeedback({ text: "Try to recreate that pattern", isError: true });
-        // }, 2000);
+      // After 2 seconds, restore user selection
+      // setTimeout(() => {
+      //   setSelectedDots(userSelection);
+      //   setFeedback({ text: "Try to recreate that pattern", isError: true });
+      // }, 2000);
       // }
     }
   };
@@ -378,28 +376,26 @@ const ConnectTheDots = () => {
         </div>
       )} */}
 
-     
-        <div className="relative mt-8 mb-5">
-          {/* Row and Column Labels */}
-          <RowLabels />
-          <ColumnLabels />
+      <div className="relative mt-8 mb-5">
+        {/* Row and Column Labels */}
+        <RowLabels />
+        <ColumnLabels />
 
-          {/* Canvas for drawing lines */}
-          <canvas
-            ref={canvasRef}
-            width="400"
-            height="400"
-            className="absolute top-0 left-0 pointer-events-none z-10"
-          />
+        {/* Canvas for drawing lines */}
+        <canvas
+          ref={canvasRef}
+          width="400"
+          height="400"
+          className="absolute top-0 left-0 pointer-events-none z-10"
+        />
 
-          {/* Grid with dots */}
-          <Grid
-            selectedDots={selectedDots}
-            onDotClick={handleDotClick}
-            currentChallenge={currentChallenge}
-          />
-        </div>
-      
+        {/* Grid with dots */}
+        <Grid
+          selectedDots={selectedDots}
+          onDotClick={handleDotClick}
+          currentChallenge={currentChallenge}
+        />
+      </div>
 
       {/* Game Controls */}
       <div className="flex flex-col items-center w-full mt-4">
@@ -408,7 +404,7 @@ const ConnectTheDots = () => {
         </div>
 
         {/* Different controls based on game status */}
-        {gameStatus === "drawing"  && (
+        {gameStatus === "drawing" && (
           <div className="flex space-x-3">
             <button
               onClick={resetGame}
